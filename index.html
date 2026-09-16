@@ -1,3 +1,8 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Підхід</title>
 <meta name="description" content="Щоденник силових тренувань: шаблони, підходи, таймер відпочинку та підсумки по групах м'язів.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -80,7 +85,7 @@
   }
   h1,h2,h3{ font-family:var(--font-display); font-weight:600; margin:0; text-wrap:balance; }
   button{ font-family:inherit; }
-  input,select,textarea{ font-family:inherit; font-size:15px; color:var(--ink); }
+  input,select,textarea{ font-family:inherit; font-size:16px; color:var(--ink); }
   .num, .mono{ font-family:var(--font-mono); font-variant-numeric:tabular-nums; }
 
   #app{ max-width:560px; margin:0 auto; min-height:100%; display:flex; flex-direction:column; }
@@ -131,8 +136,8 @@
   .btn-ghost{ background:var(--surface-2); color:var(--ink-soft); border-color:var(--border); }
   .btn-danger{ background:var(--danger); color:#fff; }
   .icon-btn{
-    width:32px; height:32px; border-radius:8px; border:1px solid var(--border); background:var(--surface-2);
-    color:var(--ink-soft); display:flex; align-items:center; justify-content:center; cursor:pointer; flex:none; font-size:15px;
+    width:38px; height:38px; border-radius:9px; border:1px solid var(--border); background:var(--surface-2);
+    color:var(--ink-soft); display:flex; align-items:center; justify-content:center; cursor:pointer; flex:none; font-size:16px;
   }
   .icon-btn.danger{ color:var(--danger); }
 
@@ -180,14 +185,14 @@
   .ex-name{ font-weight:700; font-size:16.5px; }
   .ex-group{ color:var(--accent); font-size:12.5px; font-weight:600; margin-top:2px; }
 
-  .set-row{ display:grid; grid-template-columns:22px 1fr 1fr 30px 30px; gap:8px; align-items:center; }
+  .set-row{ display:grid; grid-template-columns:20px 1fr 1fr 34px 34px; gap:6px; align-items:center; }
   .set-row-head{ color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.04em; font-weight:600; }
   .set-row input[type="number"]{
-    width:100%; border:1px solid var(--border); border-radius:8px; padding:7px 8px; background:var(--surface-2); color:var(--ink);
-    font-family:var(--font-mono); font-weight:600; text-align:center;
+    width:100%; border:1px solid var(--border); border-radius:8px; padding:9px 4px; background:var(--surface-2); color:var(--ink);
+    font-family:var(--font-mono); font-weight:600; text-align:center; font-size:16px;
   }
   .set-row.done input[type="number"]{ background:var(--good-soft); border-color:var(--good); color:var(--good); }
-  .set-row input[type="checkbox"]{ width:19px; height:19px; accent-color:var(--good); }
+  .set-row input[type="checkbox"]{ width:24px; height:24px; accent-color:var(--good); }
   .set-idx{ color:var(--muted); font-size:13px; font-family:var(--font-mono); text-align:center; }
 
   .ex-actions{ display:flex; gap:8px; }
@@ -212,7 +217,7 @@
   .rest-info .name{ font-weight:700; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .rest-time{ font-family:var(--font-mono); font-weight:700; font-size:26px; flex:none; }
   .rest-actions{ display:flex; gap:6px; flex:none; }
-  .rest-actions button{ border:none; border-radius:8px; padding:6px 9px; font-weight:700; font-size:12.5px; cursor:pointer; background:rgba(0,0,0,.12); color:inherit; }
+  .rest-actions button{ border:none; border-radius:8px; padding:9px 12px; font-weight:700; font-size:13px; cursor:pointer; background:rgba(0,0,0,.12); color:inherit; }
 
   /* ---------- bottom nav ---------- */
   .bottom-nav{
@@ -268,7 +273,11 @@
   .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
 
   [hidden]{ display:none !important; }
+  html, body{ margin:0; height:100%; }
+  body{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
 </style>
+</head>
+<body>
 
 <div id="app">
   <header class="top-bar">
@@ -1195,3 +1204,5 @@
   boot();
 })();
 </script>
+</body>
+</html>
