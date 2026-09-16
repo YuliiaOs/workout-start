@@ -1,0 +1,1197 @@
+<title>Підхід</title>
+<meta name="description" content="Щоденник силових тренувань: шаблони, підходи, таймер відпочинку та підсумки по групах м'язів.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#eef1f3;
+    --surface:#ffffff;
+    --surface-2:#f5f7f9;
+    --border:#d9dfe3;
+    --ink:#171b1f;
+    --ink-soft:#454e55;
+    --muted:#7b858d;
+    --accent:#2c5f8a;
+    --accent-ink:#ffffff;
+    --accent-soft:#e2edf5;
+    --warn:#c97a17;
+    --warn-soft:#faf0de;
+    --good:#2f8a5b;
+    --good-soft:#e5f3ec;
+    --danger:#c1392f;
+    --danger-soft:#fbe9e7;
+    --shadow: 0 1px 2px rgba(20,30,40,.06), 0 4px 14px rgba(20,30,40,.06);
+    --font-display:'Barlow Condensed', 'Arial Narrow', sans-serif;
+    --font-body:'Work Sans', system-ui, sans-serif;
+    --font-mono:'JetBrains Mono', 'Consolas', monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#12161a;
+      --surface:#1b2126;
+      --surface-2:#212930;
+      --border:#2d363d;
+      --ink:#eef2f4;
+      --ink-soft:#c3ccd2;
+      --muted:#8d99a1;
+      --accent:#6ba3d6;
+      --accent-ink:#0c1720;
+      --accent-soft:#213240;
+      --warn:#e6ac52;
+      --warn-soft:#332a19;
+      --good:#5cc190;
+      --good-soft:#173226;
+      --danger:#e2776c;
+      --danger-soft:#33201d;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#12161a;
+    --surface:#1b2126;
+    --surface-2:#212930;
+    --border:#2d363d;
+    --ink:#eef2f4;
+    --ink-soft:#c3ccd2;
+    --muted:#8d99a1;
+    --accent:#6ba3d6;
+    --accent-ink:#0c1720;
+    --accent-soft:#213240;
+    --warn:#e6ac52;
+    --warn-soft:#332a19;
+    --good:#5cc190;
+    --good-soft:#173226;
+    --danger:#e2776c;
+    --danger-soft:#33201d;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.35);
+  }
+
+  *{ box-sizing:border-box; }
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    font-size:15px;
+    line-height:1.45;
+    padding-left:16px;
+    padding-right:16px;
+  }
+  h1,h2,h3{ font-family:var(--font-display); font-weight:600; margin:0; text-wrap:balance; }
+  button{ font-family:inherit; }
+  input,select,textarea{ font-family:inherit; font-size:15px; color:var(--ink); }
+  .num, .mono{ font-family:var(--font-mono); font-variant-numeric:tabular-nums; }
+
+  #app{ max-width:560px; margin:0 auto; min-height:100%; display:flex; flex-direction:column; }
+
+  /* ---------- header ---------- */
+  .top-bar{
+    position:sticky; top:env(safe-area-inset-top,0px);
+    z-index:20; background:var(--bg);
+    display:flex; align-items:center; justify-content:space-between;
+    gap:10px; padding-block:14px 10px;
+    border-bottom:1px solid var(--border);
+  }
+  .brand{ display:flex; align-items:center; gap:10px; min-width:0; }
+  .brand-mark{
+    width:34px; height:34px; border-radius:8px; background:var(--accent); color:var(--accent-ink);
+    display:flex; align-items:center; justify-content:center; font-family:var(--font-display);
+    font-weight:700; font-size:18px; flex:none;
+  }
+  .top-bar h1{ font-size:22px; letter-spacing:.02em; text-transform:uppercase; }
+  .header-timer{
+    display:flex; align-items:center; gap:7px; background:var(--danger-soft); color:var(--danger);
+    padding:6px 12px; border-radius:999px; font-family:var(--font-mono); font-weight:600; font-size:14px;
+    flex:none; cursor:pointer; border:none;
+  }
+  .header-timer .dot{ width:8px; height:8px; border-radius:50%; background:var(--danger); animation:pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.35; } }
+  @media (prefers-reduced-motion: reduce){ .header-timer .dot{ animation:none; } }
+
+  main{ flex:1; padding-block:16px 24px; }
+  main > section{ display:flex; flex-direction:column; gap:14px; }
+
+  .section-label{ font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); font-family:var(--font-body); font-weight:600; margin-block:4px 0; }
+  .stack{ display:flex; flex-direction:column; gap:10px; }
+  .muted{ color:var(--muted); }
+  .small{ font-size:13px; }
+
+  /* ---------- buttons ---------- */
+  .btn{
+    appearance:none; border:1px solid transparent; border-radius:10px; padding:11px 16px;
+    font-weight:600; font-size:14.5px; cursor:pointer; display:inline-flex; align-items:center;
+    justify-content:center; gap:6px; transition:filter .12s, background .12s;
+  }
+  .btn:active{ filter:brightness(0.94); }
+  .btn-block{ width:100%; }
+  .btn-sm{ padding:7px 12px; font-size:13.5px; border-radius:8px; }
+  .btn-primary{ background:var(--accent); color:var(--accent-ink); }
+  .btn-outline{ background:transparent; color:var(--accent); border-color:var(--accent); }
+  .btn-ghost{ background:var(--surface-2); color:var(--ink-soft); border-color:var(--border); }
+  .btn-danger{ background:var(--danger); color:#fff; }
+  .icon-btn{
+    width:32px; height:32px; border-radius:8px; border:1px solid var(--border); background:var(--surface-2);
+    color:var(--ink-soft); display:flex; align-items:center; justify-content:center; cursor:pointer; flex:none; font-size:15px;
+  }
+  .icon-btn.danger{ color:var(--danger); }
+
+  /* ---------- cards & forms ---------- */
+  .card{ background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px; box-shadow:var(--shadow); }
+  .card-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; cursor:default; }
+  .card-title{ font-weight:600; font-size:16px; }
+  .card-meta{ color:var(--muted); font-size:13px; margin-top:2px; }
+  .card-actions{ display:flex; gap:6px; flex:none; }
+
+  .chips{ display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+  .chip{ background:var(--accent-soft); color:var(--accent); font-size:12.5px; font-weight:600; padding:3px 9px; border-radius:999px; }
+  .chip.removable{ display:inline-flex; align-items:center; gap:6px; background:var(--surface-2); color:var(--ink-soft); border:1px solid var(--border); }
+  .chip.removable button{ border:none; background:none; color:var(--muted); cursor:pointer; font-size:13px; line-height:1; padding:0; }
+
+  .panel{ background:var(--surface-2); border:1px solid var(--border); border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:10px; }
+  .panel h3{ font-size:17px; }
+  .panel label{ display:flex; flex-direction:column; gap:4px; font-size:12.5px; color:var(--muted); font-weight:600; }
+  .panel input, .panel select, .panel textarea{
+    border:1px solid var(--border); border-radius:8px; padding:9px 10px; background:var(--surface); color:var(--ink);
+  }
+  .panel input:focus, .panel select:focus, .panel textarea:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .grid3{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .grid4{ display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
+  .panel-actions{ display:flex; gap:8px; justify-content:flex-end; }
+
+  .add-row{ display:flex; gap:8px; }
+  .add-row input{ flex:1; border:1px solid var(--border); border-radius:8px; padding:9px 10px; background:var(--surface); color:var(--ink); }
+  .add-row input:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+
+  /* ---------- workout: start screen ---------- */
+  .tpl-pick{ background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:12px 14px; display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:var(--shadow); }
+  .tpl-pick-name{ font-weight:600; }
+  .tpl-pick-meta{ color:var(--muted); font-size:12.5px; margin-top:2px; }
+
+  /* ---------- workout: active ---------- */
+  .active-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:10px; }
+  .active-label{ color:var(--muted); font-size:12.5px; text-transform:uppercase; letter-spacing:.06em; font-weight:600; }
+  .elapsed{ font-family:var(--font-mono); font-weight:700; font-size:32px; letter-spacing:.01em; }
+  .active-actions{ display:flex; gap:8px; flex:none; }
+
+  .ex-card{ background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:10px; }
+  .ex-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+  .ex-name{ font-weight:700; font-size:16.5px; }
+  .ex-group{ color:var(--accent); font-size:12.5px; font-weight:600; margin-top:2px; }
+
+  .set-row{ display:grid; grid-template-columns:22px 1fr 1fr 30px 30px; gap:8px; align-items:center; }
+  .set-row-head{ color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.04em; font-weight:600; }
+  .set-row input[type="number"]{
+    width:100%; border:1px solid var(--border); border-radius:8px; padding:7px 8px; background:var(--surface-2); color:var(--ink);
+    font-family:var(--font-mono); font-weight:600; text-align:center;
+  }
+  .set-row.done input[type="number"]{ background:var(--good-soft); border-color:var(--good); color:var(--good); }
+  .set-row input[type="checkbox"]{ width:19px; height:19px; accent-color:var(--good); }
+  .set-idx{ color:var(--muted); font-size:13px; font-family:var(--font-mono); text-align:center; }
+
+  .ex-actions{ display:flex; gap:8px; }
+  .ex-comment{ width:100%; border:1px solid var(--border); border-radius:8px; padding:8px 10px; background:var(--surface-2); color:var(--ink); resize:vertical; min-height:38px; }
+  .ex-comment:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+
+  /* ---------- rest bar ---------- */
+  .rest-bar{
+    position:fixed; left:0; right:0; bottom:calc(64px + env(safe-area-inset-bottom,0px));
+    z-index:25; display:flex; justify-content:center; padding-inline:16px;
+  }
+  .rest-bar-inner{
+    max-width:528px; width:100%; background:var(--warn); color:#241703; border-radius:14px 14px 0 0;
+    padding:10px 14px; box-shadow:0 -4px 18px rgba(0,0,0,.18); position:relative; overflow:hidden;
+  }
+  :root[data-theme="dark"] .rest-bar-inner, @media (prefers-color-scheme:dark){ .rest-bar-inner{ color:#241703; } }
+  .rest-bar.rest-done .rest-bar-inner{ background:var(--danger); color:#fff; }
+  .rest-progress{ position:absolute; left:0; top:0; bottom:0; background:rgba(255,255,255,.35); width:0%; transition:width 1s linear; }
+  .rest-row{ position:relative; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .rest-info{ display:flex; flex-direction:column; min-width:0; }
+  .rest-info .lbl{ font-size:11px; text-transform:uppercase; letter-spacing:.06em; font-weight:700; opacity:.75; }
+  .rest-info .name{ font-weight:700; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .rest-time{ font-family:var(--font-mono); font-weight:700; font-size:26px; flex:none; }
+  .rest-actions{ display:flex; gap:6px; flex:none; }
+  .rest-actions button{ border:none; border-radius:8px; padding:6px 9px; font-weight:700; font-size:12.5px; cursor:pointer; background:rgba(0,0,0,.12); color:inherit; }
+
+  /* ---------- bottom nav ---------- */
+  .bottom-nav{
+    position:fixed; left:0; right:0; bottom:0; z-index:20; background:var(--surface);
+    border-top:1px solid var(--border); display:flex; justify-content:center;
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  .nav-inner{ max-width:560px; width:100%; display:flex; }
+  .nav-btn{
+    flex:1; background:none; border:none; padding:9px 4px 8px; display:flex; flex-direction:column; align-items:center;
+    gap:3px; color:var(--muted); cursor:pointer; font-size:11px; font-weight:600;
+  }
+  .nav-btn svg{ width:22px; height:22px; }
+  .nav-btn.active{ color:var(--accent); }
+
+  #app > main{ padding-bottom:150px; }
+
+  /* ---------- history ---------- */
+  .history-detail{ margin-top:12px; padding-top:12px; border-top:1px dashed var(--border); display:flex; flex-direction:column; gap:12px; }
+  .summary-table{ width:100%; border-collapse:collapse; font-size:13.5px; }
+  .summary-table th{ text-align:left; color:var(--muted); font-weight:600; font-size:11.5px; text-transform:uppercase; letter-spacing:.04em; padding-bottom:6px; border-bottom:1px solid var(--border); }
+  .summary-table td{ padding:6px 0; border-bottom:1px solid var(--border); }
+  .summary-table td:nth-child(2), .summary-table td:nth-child(3), .summary-table th:nth-child(2), .summary-table th:nth-child(3){ text-align:right; font-family:var(--font-mono); }
+  .summary-total td{ font-weight:700; border-bottom:none; }
+  .detail-ex{ display:flex; flex-direction:column; gap:5px; }
+  .detail-ex-name{ font-weight:600; display:flex; align-items:center; gap:8px; }
+  .detail-sets{ display:flex; flex-wrap:wrap; gap:6px; }
+  .set-pill{ font-family:var(--font-mono); font-size:12px; background:var(--surface-2); border:1px solid var(--border); border-radius:999px; padding:2px 9px; color:var(--muted); }
+  .set-pill.done{ background:var(--good-soft); border-color:var(--good); color:var(--good); font-weight:600; }
+  .detail-comment{ font-size:13px; color:var(--ink-soft); font-style:italic; }
+
+  /* ---------- templates edit ---------- */
+  .edit-head{ display:flex; align-items:center; gap:10px; }
+  .tpl-name-input{ flex:1; border:1px solid var(--border); border-radius:10px; padding:10px 12px; font-weight:600; font-size:16px; background:var(--surface); color:var(--ink); }
+  .tpl-name-input:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+  .tpl-ex-row{ background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:8px; box-shadow:var(--shadow); }
+  .tpl-ex-row input, .tpl-ex-row select{ border:1px solid var(--border); border-radius:8px; padding:8px 9px; background:var(--surface-2); color:var(--ink); width:100%; }
+  .tpl-ex-row label{ display:flex; flex-direction:column; gap:3px; font-size:11px; color:var(--muted); font-weight:600; }
+  .tpl-ex-row-head{ display:flex; justify-content:flex-end; }
+
+  hr{ border:none; border-top:1px solid var(--border); margin:4px 0; }
+
+  /* ---------- confirm overlay & toast ---------- */
+  .confirm-overlay{ position:fixed; inset:0; background:rgba(10,14,18,.5); z-index:50; display:flex; align-items:center; justify-content:center; padding:20px; }
+  .confirm-box{ background:var(--surface); border-radius:14px; padding:18px; max-width:340px; width:100%; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:14px; }
+  .confirm-box p{ margin:0; font-size:15px; }
+  .confirm-actions{ display:flex; gap:8px; justify-content:flex-end; }
+  .toast{
+    position:fixed; left:50%; bottom:78px; transform:translateX(-50%) translateY(10px); z-index:60;
+    background:var(--ink); color:var(--bg); padding:9px 16px; border-radius:999px; font-size:13.5px; font-weight:600;
+    opacity:0; pointer-events:none; transition:opacity .2s, transform .2s;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  [hidden]{ display:none !important; }
+</style>
+
+<div id="app">
+  <header class="top-bar">
+    <div class="brand">
+      <span class="brand-mark">П</span>
+      <h1 id="page-title">Тренування</h1>
+    </div>
+    <button class="header-timer" id="header-timer" data-action="goto-workout" hidden>
+      <span class="dot"></span><span id="header-elapsed" class="num">00:00:00</span>
+    </button>
+  </header>
+
+  <main>
+    <section id="view-workout">
+      <div id="workout-start">
+        <button class="btn btn-primary btn-block" data-action="start-blank">Почати порожнє тренування</button>
+        <h2 class="section-label">Або обрати шаблон</h2>
+        <div id="start-template-list" class="stack"></div>
+      </div>
+
+      <div id="workout-active" hidden>
+        <div class="active-head">
+          <div>
+            <div class="active-label" id="active-name-label">Тренування</div>
+            <div class="elapsed num" id="elapsed-time">00:00:00</div>
+          </div>
+          <div class="active-actions">
+            <button class="btn btn-ghost btn-sm" data-action="discard-workout">Скасувати</button>
+            <button class="btn btn-primary btn-sm" data-action="finish-workout">Завершити</button>
+          </div>
+        </div>
+
+        <div id="exercise-list" class="stack"></div>
+
+        <button class="btn btn-outline btn-block" data-action="toggle-add-exercise">+ Додати вправу</button>
+
+        <div id="add-exercise-panel" class="panel" hidden>
+          <h3>Нова вправа</h3>
+          <label>Назва вправи
+            <input type="text" id="ae-name" list="exercise-names" placeholder="Напр. Жим лежачи">
+          </label>
+          <datalist id="exercise-names"></datalist>
+          <label>Група мʼязів
+            <select id="ae-group"></select>
+          </label>
+          <div class="grid3">
+            <label>Підходів<input type="number" id="ae-sets" min="1" step="1" value="3"></label>
+            <label>Вага, кг<input type="number" id="ae-weight" min="0" step="0.5" value="0"></label>
+            <label>Повтори<input type="number" id="ae-reps" min="0" step="1" value="10"></label>
+          </div>
+          <label>Відпочинок, хв<input type="number" id="ae-rest" min="0" step="0.5" value="2"></label>
+          <label>Коментар<textarea id="ae-comment" rows="2" placeholder="Необовʼязково"></textarea></label>
+          <div class="panel-actions">
+            <button class="btn btn-ghost btn-sm" data-action="cancel-add-exercise">Скасувати</button>
+            <button class="btn btn-primary btn-sm" data-action="submit-add-exercise">Додати вправу</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="workout-recap" hidden>
+        <h2 class="section-label">Тренування завершено</h2>
+        <div id="recap-content" class="stack"></div>
+        <button class="btn btn-primary btn-block" data-action="recap-done">Готово</button>
+      </div>
+    </section>
+
+    <section id="view-templates" hidden>
+      <div id="templates-list-mode">
+        <button class="btn btn-primary btn-block" data-action="new-template">+ Новий шаблон</button>
+        <div id="templates-list" class="stack"></div>
+      </div>
+      <div id="templates-edit-mode" hidden class="stack">
+        <div class="edit-head">
+          <button class="icon-btn" data-action="tpl-back" title="Назад">←</button>
+          <input type="text" id="tpl-name" class="tpl-name-input" placeholder="Назва шаблону, напр. День спини">
+        </div>
+        <div id="tpl-exercises" class="stack"></div>
+        <button class="btn btn-outline btn-block" data-action="tpl-add-exercise">+ Вправа</button>
+        <button class="btn btn-primary btn-block" data-action="tpl-save">Зберегти шаблон</button>
+      </div>
+    </section>
+
+    <section id="view-history" hidden>
+      <div id="history-list" class="stack"></div>
+    </section>
+
+    <section id="view-settings" hidden>
+      <h2 class="section-label">Групи мʼязів</h2>
+      <div id="groups-list" class="chips"></div>
+      <div class="add-row">
+        <input type="text" id="new-group-input" placeholder="Нова група, напр. Прес">
+        <button class="btn btn-primary btn-sm" data-action="add-group">Додати</button>
+      </div>
+      <p class="muted small">Ці групи зʼявляться у випадаючому списку під час створення вправ.</p>
+      <hr>
+      <h2 class="section-label">Дані</h2>
+      <p class="muted small">Застосунок не потребує акаунту — дані зберігаються прямо в цьому браузері на цьому пристрої, тож посиланням можна вільно ділитися: кожен матиме свою окрему, приватну базу. Щоб перенести свої тренування на інший пристрій (наприклад, з телефону на компʼютер) — вивантажте резервну копію тут і завантажте її там.</p>
+      <div class="stack">
+        <button class="btn btn-outline btn-block" data-action="export-data">Завантажити резервну копію (.json)</button>
+        <label class="btn btn-ghost btn-block" for="import-file-input">Завантажити з файлу</label>
+        <input type="file" id="import-file-input" accept="application/json" hidden>
+      </div>
+    </section>
+  </main>
+
+  <div id="rest-bar" class="rest-bar" hidden>
+    <div class="rest-bar-inner">
+      <div class="rest-progress" id="rest-progress"></div>
+      <div class="rest-row">
+        <div class="rest-info">
+          <span class="lbl">Відпочинок</span>
+          <span class="name" id="rest-name">—</span>
+        </div>
+        <div class="rest-time num" id="rest-remaining">00:00</div>
+        <div class="rest-actions">
+          <button data-action="rest-add15">+15с</button>
+          <button data-action="rest-skip">✕</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <div class="nav-inner">
+      <button class="nav-btn active" data-view="workout">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9v6M2 10.5v3M20 9v6M22 10.5v3M7 12h10"/><rect x="5" y="7.5" width="4" height="9" rx="1"/><rect x="15" y="7.5" width="4" height="9" rx="1"/></svg>
+        <span>Тренування</span>
+      </button>
+      <button class="nav-btn" data-view="templates">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1V4"/><line x1="8" y1="10.5" x2="16" y2="10.5"/><line x1="8" y1="14.5" x2="16" y2="14.5"/><line x1="8" y1="18.5" x2="13" y2="18.5"/></svg>
+        <span>Шаблони</span>
+      </button>
+      <button class="nav-btn" data-view="history">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 7.5v5l4 2"/></svg>
+        <span>Історія</span>
+      </button>
+      <button class="nav-btn" data-view="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="16" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="11" cy="18" r="2" fill="currentColor" stroke="none"/></svg>
+        <span>Налаштування</span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="confirm-overlay" id="confirm-overlay" hidden>
+    <div class="confirm-box">
+      <p id="confirm-message"></p>
+      <div class="confirm-actions">
+        <button class="btn btn-ghost btn-sm" id="confirm-cancel">Скасувати</button>
+        <button class="btn btn-danger btn-sm" id="confirm-ok">Так</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var DEFAULT_GROUPS = ["Груди","Спина","Ноги","Плечі","Біцепс","Трицепс","Прес","Сідниці","Литки","Передпліччя"];
+
+  var state = {
+    muscleGroups: DEFAULT_GROUPS.slice(),
+    templates: [],
+    history: [],
+    active: null,
+    recap: null,
+  };
+
+  var elapsedIntervalId = null;
+  var restTimer = null;
+  var tplEdit = null;
+
+  /* ---------------- utils ---------------- */
+  function uid(){ return Math.random().toString(36).slice(2,10) + Date.now().toString(36); }
+  function esc(s){
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+  function clamp(n, min){ n = Number(n); if (isNaN(n)) n = min; return Math.max(min, n); }
+  function fmtClock(totalSec, withHours){
+    totalSec = Math.max(0, Math.round(totalSec || 0));
+    var h = Math.floor(totalSec/3600), m = Math.floor((totalSec%3600)/60), s = totalSec%60;
+    function pad(n){ return String(n).padStart(2,"0"); }
+    if (withHours || h > 0) return pad(h)+":"+pad(m)+":"+pad(s);
+    return pad(m)+":"+pad(s);
+  }
+  function fmtDateLong(iso){
+    var d = new Date(iso);
+    return d.toLocaleString("uk-UA", {day:"numeric", month:"long", year:"numeric", hour:"2-digit", minute:"2-digit"});
+  }
+  function fmtNum(n){ return Number(n||0).toLocaleString("uk-UA"); }
+  function debounce(fn, ms){
+    var t = null;
+    return function(){
+      var args = arguments;
+      clearTimeout(t);
+      t = setTimeout(function(){ fn.apply(null, args); }, ms);
+    };
+  }
+  function $(id){ return document.getElementById(id); }
+
+  function toast(msg){
+    var el = $("toast");
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function(){ el.classList.remove("show"); }, 2200);
+  }
+
+  function askConfirm(message){
+    return new Promise(function(resolve){
+      $("confirm-message").textContent = message;
+      var overlay = $("confirm-overlay");
+      overlay.hidden = false;
+      var ok = $("confirm-ok"), cancel = $("confirm-cancel");
+      function cleanup(v){
+        overlay.hidden = true;
+        ok.removeEventListener("click", onOk);
+        cancel.removeEventListener("click", onCancel);
+        resolve(v);
+      }
+      function onOk(){ cleanup(true); }
+      function onCancel(){ cleanup(false); }
+      ok.addEventListener("click", onOk);
+      cancel.addEventListener("click", onCancel);
+    });
+  }
+
+  function beep(times){
+    times = times || 3;
+    try{
+      var Ctx = window.AudioContext || window.webkitAudioContext;
+      var ctx = new Ctx();
+      var t = ctx.currentTime;
+      for (var i=0; i<times; i++){
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = 880;
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(0.35, t+0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t+0.28);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(t); osc.stop(t+0.3);
+        t += 0.42;
+      }
+      setTimeout(function(){ try{ ctx.close(); }catch(e){} }, (times*420)+400);
+    }catch(e){}
+    try{ navigator.vibrate && navigator.vibrate([260,90,260,90,260]); }catch(e){}
+  }
+
+  /* ---------------- storage (local to this browser, no account needed) ---------------- */
+  var KEYS = { settings: "wk_settings", templates: "wk_templates", history: "wk_history", active: "wk_active" };
+  function readKey(key, fallback){
+    try{ var v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+    catch(e){ return fallback; }
+  }
+  function writeKey(key, value){
+    try{
+      if (value === null) localStorage.removeItem(key);
+      else localStorage.setItem(key, JSON.stringify(value));
+    }catch(e){}
+  }
+  var Store = {
+    loadAll(){
+      return {
+        settings: readKey(KEYS.settings, null),
+        templates: readKey(KEYS.templates, []),
+        history: readKey(KEYS.history, []),
+        active: readKey(KEYS.active, null),
+      };
+    },
+    saveSettings(settings){ writeKey(KEYS.settings, settings); },
+    saveTemplate(tpl){
+      var list = state.templates.slice();
+      if (tpl.id){ list = list.map(function(t){ return t.id === tpl.id ? tpl : t; }); }
+      else { tpl = Object.assign({}, tpl, {id: uid()}); list.push(tpl); }
+      writeKey(KEYS.templates, list);
+      return tpl.id;
+    },
+    deleteTemplate(id){
+      writeKey(KEYS.templates, state.templates.filter(function(t){ return t.id !== id; }));
+    },
+    saveHistoryEntry(entry){
+      var e2 = Object.assign({}, entry, {id: uid()});
+      writeKey(KEYS.history, [e2].concat(state.history));
+      return e2.id;
+    },
+    deleteHistoryEntry(id){
+      writeKey(KEYS.history, state.history.filter(function(h){ return h.id !== id; }));
+    },
+    saveActive(active){ writeKey(KEYS.active, active); },
+    replaceTemplates(list){ writeKey(KEYS.templates, list); },
+    replaceHistory(list){ writeKey(KEYS.history, list); },
+  };
+  var scheduleActiveSave = debounce(function(){ Store.saveActive(state.active); }, 700);
+
+  /* ---------------- backup: export / import ---------------- */
+  async function exportData(){
+    var payload = {
+      app: "Підхід", version: 1, exportedAt: new Date().toISOString(),
+      muscleGroups: state.muscleGroups, templates: state.templates, history: state.history,
+    };
+    var json = JSON.stringify(payload, null, 2);
+    var filename = "pidkhid-" + new Date().toISOString().slice(0,10) + ".json";
+    try{
+      var downloads = (window.claude && window.claude.use) ? await window.claude.use("downloads") : null;
+      if (!downloads){ toast("Збереження файлів тут недоступне"); return; }
+      await downloads.save({filename: filename, data: json});
+      toast("Резервну копію збережено");
+    }catch(err){
+      if (err && err.code === "declined") return;
+      toast("Не вдалося зберегти файл");
+    }
+  }
+  async function onImportFile(e){
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    var text;
+    try{ text = await file.text(); }
+    catch(err){ toast("Не вдалося прочитати файл"); e.target.value = ""; return; }
+    var data;
+    try{ data = JSON.parse(text); }
+    catch(err){ toast("Файл пошкоджений або не є JSON"); e.target.value = ""; return; }
+    var ok = await askConfirm("Імпортувати дані з файлу? Поточні групи мʼязів, шаблони та історія в цьому браузері будуть замінені.");
+    e.target.value = "";
+    if (!ok) return;
+    if (Array.isArray(data.muscleGroups) && data.muscleGroups.length) state.muscleGroups = data.muscleGroups;
+    if (Array.isArray(data.templates)) state.templates = data.templates;
+    if (Array.isArray(data.history)) state.history = data.history;
+    Store.saveSettings({muscleGroups: state.muscleGroups});
+    Store.replaceTemplates(state.templates);
+    Store.replaceHistory(state.history);
+    renderAll();
+    toast("Дані імпортовано");
+  }
+
+  /* ---------------- summary ---------------- */
+  function computeSummary(exercises){
+    var summary = {};
+    exercises.forEach(function(ex){
+      var g = ex.muscleGroup || "Без групи";
+      if (!summary[g]) summary[g] = {reps:0, volume:0, sets:0};
+      ex.sets.forEach(function(s){
+        if (s.done){
+          var w = Number(s.weight)||0, r = Number(s.reps)||0;
+          summary[g].reps += r;
+          summary[g].volume += w*r;
+          summary[g].sets += 1;
+        }
+      });
+    });
+    return summary;
+  }
+
+  /* ---------------- view switching ---------------- */
+  var TITLES = {workout:"Тренування", templates:"Шаблони", history:"Історія", settings:"Налаштування"};
+  var currentView = "workout";
+  function showView(name){
+    ["workout","templates","history","settings"].forEach(function(v){
+      $("view-"+v).hidden = (v !== name);
+    });
+    document.querySelectorAll(".nav-btn").forEach(function(b){
+      b.classList.toggle("active", b.dataset.view === name);
+    });
+    $("page-title").textContent = TITLES[name];
+    currentView = name;
+  }
+
+  /* ---------------- workout: rendering ---------------- */
+  function fillGroupSelect(sel, selected){
+    sel.innerHTML = state.muscleGroups.map(function(g){
+      return '<option value="'+esc(g)+'"'+(g===selected?" selected":"")+'>'+esc(g)+'</option>';
+    }).join("");
+  }
+
+  function groupsSummaryText(tpl){
+    var set = {};
+    tpl.exercises.forEach(function(e){ if (e.muscleGroup) set[e.muscleGroup] = true; });
+    return Object.keys(set).join(", ") || "без груп";
+  }
+
+  function renderStartTemplateList(){
+    var el = $("start-template-list");
+    if (!state.templates.length){
+      el.innerHTML = '<p class="muted small">Шаблонів ще немає. Створіть їх у вкладці «Шаблони».</p>';
+      return;
+    }
+    el.innerHTML = state.templates.map(function(t){
+      return '<div class="tpl-pick">'
+        + '<div><div class="tpl-pick-name">'+esc(t.name)+'</div>'
+        + '<div class="tpl-pick-meta">'+t.exercises.length+' вправ · '+esc(groupsSummaryText(t))+'</div></div>'
+        + '<button class="btn btn-outline btn-sm" data-action="start-template" data-id="'+esc(t.id)+'">Почати</button>'
+        + '</div>';
+    }).join("");
+  }
+
+  function exCardHtml(ex){
+    var setsHtml = ex.sets.map(function(s, i){
+      return '<div class="set-row'+(s.done?" done":"")+'">'
+        + '<span class="set-idx">'+(i+1)+'</span>'
+        + '<input type="number" inputmode="decimal" min="0" step="0.5" value="'+esc(s.weight)+'" data-action="set-weight" data-set="'+i+'">'
+        + '<input type="number" inputmode="numeric" min="0" step="1" value="'+esc(s.reps)+'" data-action="set-reps" data-set="'+i+'">'
+        + '<input type="checkbox" data-action="set-done" data-set="'+i+'"'+(s.done?" checked":"")+'>'
+        + '<button class="icon-btn danger" data-action="remove-set" data-set="'+i+'" title="Видалити підхід">✕</button>'
+        + '</div>';
+    }).join("");
+    return '<div class="ex-card" data-ex="'+esc(ex.id)+'">'
+      + '<div class="ex-head"><div><div class="ex-name">'+esc(ex.name)+'</div><div class="ex-group">'+esc(ex.muscleGroup||"Без групи")+'</div></div>'
+      + '<button class="icon-btn danger" data-action="remove-exercise" title="Видалити вправу">✕</button></div>'
+      + '<div class="sets"><div class="set-row set-row-head"><span>#</span><span>Вага, кг</span><span>Повтори</span><span>✓</span><span></span></div>'+setsHtml+'</div>'
+      + '<div class="ex-actions"><button class="btn btn-ghost btn-sm" data-action="add-set">+ Підхід</button>'
+      + '<button class="btn btn-ghost btn-sm" data-action="start-rest">⏱ Відпочинок '+esc(ex.restMin)+' хв</button></div>'
+      + '<textarea class="ex-comment" rows="2" placeholder="Коментар після виконання..." data-action="comment">'+esc(ex.comment||"")+'</textarea>'
+      + '</div>';
+  }
+
+  function renderExerciseList(){
+    var el = $("exercise-list");
+    if (!state.active || !state.active.exercises.length){
+      el.innerHTML = '<p class="muted small">Ще немає вправ. Додайте першу нижче.</p>';
+      return;
+    }
+    el.innerHTML = state.active.exercises.map(exCardHtml).join("");
+  }
+
+  function recapHeaderHtml(entry){
+    var totalVolume = 0, totalReps = 0;
+    Object.values(entry.summary||{}).forEach(function(g){ totalVolume += g.volume; totalReps += g.reps; });
+    return '<div class="card"><div class="card-title">'+fmtDateLong(entry.startedAt)+'</div>'
+      + '<div class="card-meta">Тривалість '+fmtClock(entry.durationSec,true)+' · '+fmtNum(totalReps)+' повторень · '+fmtNum(totalVolume)+' кг сумарно</div></div>';
+  }
+
+  function historyDetailHtml(h){
+    var groups = Object.entries(h.summary||{});
+    var totalReps = 0, totalVolume = 0;
+    var groupRows = groups.map(function(g){
+      totalReps += g[1].reps; totalVolume += g[1].volume;
+      return '<tr><td>'+esc(g[0])+'</td><td>'+fmtNum(g[1].reps)+'</td><td>'+fmtNum(g[1].volume)+' кг</td></tr>';
+    }).join("");
+    var table = groups.length
+      ? '<table class="summary-table"><thead><tr><th>Група мʼязів</th><th>Повторів</th><th>Вага</th></tr></thead><tbody>'
+        + groupRows + '<tr class="summary-total"><td>Разом</td><td>'+fmtNum(totalReps)+'</td><td>'+fmtNum(totalVolume)+' кг</td></tr></tbody></table>'
+      : '<p class="muted small">Жоден підхід не був відмічений виконаним.</p>';
+    var exList = h.exercises.map(function(ex){
+      var pills = ex.sets.map(function(s){
+        return '<span class="set-pill'+(s.done?" done":"")+'">'+esc(s.weight)+'кг×'+esc(s.reps)+'</span>';
+      }).join("");
+      return '<div class="detail-ex"><div class="detail-ex-name">'+esc(ex.name)+' <span class="chip">'+esc(ex.muscleGroup||"Без групи")+'</span></div>'
+        + '<div class="detail-sets">'+pills+'</div>'
+        + (ex.comment ? '<div class="detail-comment">«'+esc(ex.comment)+'»</div>' : '')
+        + '</div>';
+    }).join("");
+    return table + '<div class="stack">'+exList+'</div>';
+  }
+
+  function renderWorkout(){
+    var elStart = $("workout-start"), elActive = $("workout-active"), elRecap = $("workout-recap"), headerTimer = $("header-timer");
+    if (state.recap){
+      elStart.hidden = true; elActive.hidden = true; elRecap.hidden = false;
+      $("recap-content").innerHTML = recapHeaderHtml(state.recap) + historyDetailHtml(state.recap);
+      headerTimer.hidden = true;
+    } else if (state.active){
+      elStart.hidden = true; elActive.hidden = false; elRecap.hidden = true;
+      $("active-name-label").textContent = state.active.templateName ? state.active.templateName : "Довільне тренування";
+      renderExerciseList();
+      updateElapsedDisplay();
+      if (!elapsedIntervalId) startElapsedTimer();
+      headerTimer.hidden = false;
+    } else {
+      elStart.hidden = false; elActive.hidden = true; elRecap.hidden = true;
+      headerTimer.hidden = true;
+      stopElapsedTimer();
+      renderStartTemplateList();
+    }
+  }
+
+  /* ---------------- timers ---------------- */
+  function startElapsedTimer(){
+    updateElapsedDisplay();
+    elapsedIntervalId = setInterval(updateElapsedDisplay, 1000);
+  }
+  function stopElapsedTimer(){
+    if (elapsedIntervalId) clearInterval(elapsedIntervalId);
+    elapsedIntervalId = null;
+  }
+  function updateElapsedDisplay(){
+    if (!state.active) return;
+    var sec = Math.max(0, Math.round((Date.now() - new Date(state.active.startedAt).getTime())/1000));
+    var txt = fmtClock(sec, true);
+    var a = $("elapsed-time"); if (a) a.textContent = txt;
+    var b = $("header-elapsed"); if (b) b.textContent = txt;
+  }
+
+  function renderRestBar(){
+    if (!restTimer) return;
+    $("rest-name").textContent = restTimer.exName;
+    $("rest-remaining").textContent = fmtClock(restTimer.remaining, false);
+    var pct = restTimer.totalSec ? (100 - (restTimer.remaining/restTimer.totalSec*100)) : 100;
+    $("rest-progress").style.width = pct + "%";
+  }
+  function startRest(exId, exName, minutes){
+    clearRestTimerSilent();
+    var totalSec = Math.max(1, Math.round((Number(minutes)||1) * 60));
+    restTimer = {exId: exId, exName: exName, totalSec: totalSec, remaining: totalSec};
+    $("rest-bar").hidden = false;
+    $("rest-bar").classList.remove("rest-done");
+    renderRestBar();
+    restTimer.intervalId = setInterval(function(){
+      restTimer.remaining -= 1;
+      if (restTimer.remaining <= 0){
+        clearInterval(restTimer.intervalId);
+        restTimer.remaining = 0;
+        renderRestBar();
+        $("rest-bar").classList.add("rest-done");
+        $("rest-name").textContent = "Відпочинок завершено — " + restTimer.exName;
+        beep(3);
+      } else {
+        renderRestBar();
+      }
+    }, 1000);
+  }
+  function clearRestTimerSilent(){
+    if (restTimer && restTimer.intervalId) clearInterval(restTimer.intervalId);
+    restTimer = null;
+    var bar = $("rest-bar");
+    bar.hidden = true;
+    bar.classList.remove("rest-done");
+  }
+
+  /* ---------------- active workout mutations ---------------- */
+  function findActiveEx(id){
+    return state.active.exercises.find(function(e){ return e.id === id; });
+  }
+  function addSet(exId){
+    var ex = findActiveEx(exId); if (!ex) return;
+    var last = ex.sets[ex.sets.length-1] || {weight:0, reps:0};
+    ex.sets.push({weight:last.weight, reps:last.reps, done:false});
+    Store.saveActive(state.active);
+    renderExerciseList();
+  }
+  async function removeSet(exId, idx){
+    var ex = findActiveEx(exId); if (!ex) return;
+    if (ex.sets.length <= 1){ toast("Має лишитись хоча б один підхід"); return; }
+    ex.sets.splice(idx,1);
+    Store.saveActive(state.active);
+    renderExerciseList();
+  }
+  async function removeExercise(exId){
+    var ok = await askConfirm("Видалити цю вправу з тренування?");
+    if (!ok) return;
+    state.active.exercises = state.active.exercises.filter(function(e){ return e.id !== exId; });
+    Store.saveActive(state.active);
+    renderExerciseList();
+  }
+  function manualStartRest(exId){
+    var ex = findActiveEx(exId); if (!ex) return;
+    startRest(ex.id, ex.name, ex.restMin || 1);
+  }
+  function onSetValueInput(t){
+    var card = t.closest(".ex-card"); if (!card) return;
+    var ex = findActiveEx(card.dataset.ex); if (!ex) return;
+    var idx = Number(t.dataset.set);
+    var field = t.dataset.action === "set-weight" ? "weight" : "reps";
+    ex.sets[idx][field] = t.value === "" ? "" : Number(t.value);
+    scheduleActiveSave();
+  }
+  function onSetDoneChange(t){
+    var card = t.closest(".ex-card"); if (!card) return;
+    var ex = findActiveEx(card.dataset.ex); if (!ex) return;
+    var idx = Number(t.dataset.set);
+    ex.sets[idx].done = t.checked;
+    var row = t.closest(".set-row");
+    if (row) row.classList.toggle("done", t.checked);
+    if (t.checked && Number(ex.restMin) > 0){ startRest(ex.id, ex.name, ex.restMin); }
+    Store.saveActive(state.active);
+  }
+  function onCommentInput(t){
+    var card = t.closest(".ex-card"); if (!card) return;
+    var ex = findActiveEx(card.dataset.ex); if (!ex) return;
+    ex.comment = t.value;
+    scheduleActiveSave();
+  }
+
+  function populateExerciseNames(){
+    var names = {};
+    state.templates.forEach(function(t){ t.exercises.forEach(function(e){ if (e.name) names[e.name]=1; }); });
+    state.history.forEach(function(h){ h.exercises.forEach(function(e){ if (e.name) names[e.name]=1; }); });
+    $("exercise-names").innerHTML = Object.keys(names).map(function(n){ return '<option value="'+esc(n)+'"></option>'; }).join("");
+  }
+  function toggleAddExercisePanel(forceHide){
+    var panel = $("add-exercise-panel");
+    var willShow = forceHide ? false : panel.hidden;
+    panel.hidden = !willShow;
+    if (willShow){
+      populateExerciseNames();
+      fillGroupSelect($("ae-group"));
+      $("ae-name").focus();
+    }
+  }
+  function resetAddExerciseForm(){
+    $("ae-name").value = "";
+    $("ae-sets").value = 3;
+    $("ae-weight").value = 0;
+    $("ae-reps").value = 10;
+    $("ae-rest").value = 2;
+    $("ae-comment").value = "";
+  }
+  function submitAddExercise(){
+    var name = $("ae-name").value.trim();
+    if (!name){ toast("Вкажіть назву вправи"); return; }
+    var group = $("ae-group").value;
+    var setsCount = clamp($("ae-sets").value, 1);
+    var weight = clamp($("ae-weight").value, 0);
+    var reps = clamp($("ae-reps").value, 0);
+    var restMin = clamp($("ae-rest").value, 0);
+    var comment = $("ae-comment").value.trim();
+    var ex = {
+      id: uid(), name: name, muscleGroup: group, restMin: restMin, comment: comment,
+      sets: Array.from({length: setsCount}, function(){ return {weight:weight, reps:reps, done:false}; }),
+    };
+    state.active.exercises.push(ex);
+    Store.saveActive(state.active);
+    renderExerciseList();
+    toggleAddExercisePanel(true);
+    resetAddExerciseForm();
+  }
+
+  async function finishWorkout(){
+    if (!state.active.exercises.length){ toast("Додайте хоча б одну вправу"); return; }
+    var ok = await askConfirm("Завершити тренування?");
+    if (!ok) return;
+    var endedAt = new Date();
+    var startedAt = new Date(state.active.startedAt);
+    var durationSec = Math.round((endedAt - startedAt)/1000);
+    var summary = computeSummary(state.active.exercises);
+    var entry = {
+      date: state.active.startedAt.slice(0,10),
+      startedAt: state.active.startedAt,
+      endedAt: endedAt.toISOString(),
+      durationSec: durationSec,
+      templateName: state.active.templateName || null,
+      exercises: state.active.exercises,
+      summary: summary,
+    };
+    var id = await Store.saveHistoryEntry(entry);
+    entry.id = id;
+    state.history.unshift(entry);
+    state.recap = entry;
+    state.active = null;
+    await Store.saveActive(null);
+    stopElapsedTimer();
+    clearRestTimerSilent();
+    renderWorkout();
+    renderHistory();
+  }
+  async function discardWorkout(){
+    var ok = await askConfirm("Скасувати тренування без збереження?");
+    if (!ok) return;
+    state.active = null;
+    await Store.saveActive(null);
+    stopElapsedTimer();
+    clearRestTimerSilent();
+    renderWorkout();
+  }
+  async function startBlank(){
+    state.active = { startedAt: new Date().toISOString(), templateName: null, exercises: [] };
+    await Store.saveActive(state.active);
+    renderWorkout();
+  }
+  async function startFromTemplate(id){
+    var tpl = state.templates.find(function(t){ return t.id === id; });
+    if (!tpl) return;
+    state.active = {
+      startedAt: new Date().toISOString(),
+      templateName: tpl.name,
+      exercises: tpl.exercises.map(function(ex){
+        var count = clamp(ex.setsCount, 1);
+        return {
+          id: uid(), name: ex.name, muscleGroup: ex.muscleGroup, restMin: ex.restMin, comment: ex.comment || "",
+          sets: Array.from({length: count}, function(){ return {weight: ex.weight, reps: ex.reps, done:false}; }),
+        };
+      }),
+    };
+    await Store.saveActive(state.active);
+    renderWorkout();
+  }
+
+  /* ---------------- templates ---------------- */
+  function uniqueGroups(t){
+    var set = {};
+    t.exercises.forEach(function(e){ if (e.muscleGroup) set[e.muscleGroup]=1; });
+    return Object.keys(set);
+  }
+  function renderTemplatesList(){
+    var el = $("templates-list");
+    if (!state.templates.length){
+      el.innerHTML = '<p class="muted small">Ще немає жодного шаблону.</p>';
+      return;
+    }
+    el.innerHTML = state.templates.map(function(t){
+      var chips = uniqueGroups(t).map(function(g){ return '<span class="chip">'+esc(g)+'</span>'; }).join("");
+      return '<div class="card"><div class="card-row"><div><div class="card-title">'+esc(t.name)+'</div>'
+        + '<div class="card-meta">'+t.exercises.length+' вправ</div><div class="chips">'+chips+'</div></div>'
+        + '<div class="card-actions"><button class="icon-btn" data-action="edit-template" data-id="'+esc(t.id)+'" title="Редагувати">✎</button>'
+        + '<button class="icon-btn danger" data-action="delete-template" data-id="'+esc(t.id)+'" title="Видалити">🗑</button></div>'
+        + '</div></div>';
+    }).join("");
+  }
+  function tplExRowHtml(ex, idx){
+    var opts = state.muscleGroups.map(function(g){ return '<option value="'+esc(g)+'"'+(g===ex.muscleGroup?" selected":"")+'>'+esc(g)+'</option>'; }).join("");
+    return '<div class="tpl-ex-row" data-idx="'+idx+'">'
+      + '<div class="tpl-ex-row-head"><button class="icon-btn danger" data-action="tpl-remove-exercise" data-idx="'+idx+'" title="Видалити вправу">🗑</button></div>'
+      + '<div class="grid2"><input type="text" placeholder="Назва вправи" value="'+esc(ex.name)+'" data-field="name">'
+      + '<select data-field="muscleGroup">'+opts+'</select></div>'
+      + '<div class="grid4">'
+      + '<label>Підходів<input type="number" min="1" step="1" value="'+esc(ex.setsCount)+'" data-field="setsCount"></label>'
+      + '<label>Вага, кг<input type="number" min="0" step="0.5" value="'+esc(ex.weight)+'" data-field="weight"></label>'
+      + '<label>Повтори<input type="number" min="0" step="1" value="'+esc(ex.reps)+'" data-field="reps"></label>'
+      + '<label>Відпочинок, хв<input type="number" min="0" step="0.5" value="'+esc(ex.restMin)+'" data-field="restMin"></label>'
+      + '</div>'
+      + '<input type="text" placeholder="Нотатка (необовʼязково)" value="'+esc(ex.comment||"")+'" data-field="comment">'
+      + '</div>';
+  }
+  function renderTplExercises(){
+    $("tpl-exercises").innerHTML = tplEdit.exercises.map(tplExRowHtml).join("") || '<p class="muted small">Додайте хоча б одну вправу.</p>';
+  }
+  function newTemplate(){
+    tplEdit = {id:null, name:"", exercises:[]};
+    enterTemplateEdit();
+  }
+  function editTemplate(id){
+    var t = state.templates.find(function(x){ return x.id === id; });
+    if (!t) return;
+    tplEdit = JSON.parse(JSON.stringify(t));
+    enterTemplateEdit();
+  }
+  function enterTemplateEdit(){
+    $("templates-list-mode").hidden = true;
+    $("templates-edit-mode").hidden = false;
+    $("tpl-name").value = tplEdit.name;
+    renderTplExercises();
+  }
+  function backFromTemplateEdit(){
+    tplEdit = null;
+    $("templates-list-mode").hidden = false;
+    $("templates-edit-mode").hidden = true;
+  }
+  function tplAddExercise(){
+    tplEdit.exercises.push({id:uid(), name:"", muscleGroup: state.muscleGroups[0]||"", setsCount:3, weight:0, reps:10, restMin:2, comment:""});
+    renderTplExercises();
+  }
+  function tplRemoveExercise(idx){
+    tplEdit.exercises.splice(idx,1);
+    renderTplExercises();
+  }
+  function onTplFieldInput(inputEl){
+    var row = inputEl.closest(".tpl-ex-row"); if (!row) return;
+    var idx = Number(row.dataset.idx);
+    var field = inputEl.dataset.field;
+    var val = inputEl.value;
+    if (["setsCount","weight","reps","restMin"].indexOf(field) !== -1) val = Number(val)||0;
+    tplEdit.exercises[idx][field] = val;
+  }
+  async function deleteTemplate(id){
+    var ok = await askConfirm("Видалити цей шаблон?");
+    if (!ok) return;
+    await Store.deleteTemplate(id);
+    state.templates = state.templates.filter(function(t){ return t.id !== id; });
+    renderTemplatesList();
+    renderStartTemplateList();
+  }
+  async function saveTemplateEdit(){
+    tplEdit.name = $("tpl-name").value.trim();
+    if (!tplEdit.name){ toast("Вкажіть назву шаблону"); return; }
+    if (!tplEdit.exercises.length){ toast("Додайте хоча б одну вправу"); return; }
+    for (var i=0;i<tplEdit.exercises.length;i++){
+      if (!tplEdit.exercises[i].name || !tplEdit.exercises[i].name.trim()){ toast("Заповніть назви усіх вправ"); return; }
+    }
+    var id = await Store.saveTemplate(tplEdit);
+    tplEdit.id = id;
+    var idx = state.templates.findIndex(function(t){ return t.id === id; });
+    if (idx >= 0) state.templates[idx] = tplEdit; else state.templates.push(tplEdit);
+    backFromTemplateEdit();
+    renderTemplatesList();
+    renderStartTemplateList();
+    toast("Шаблон збережено");
+  }
+
+  /* ---------------- history ---------------- */
+  function renderHistory(){
+    var el = $("history-list");
+    if (!state.history.length){
+      el.innerHTML = '<p class="muted">Ще немає завершених тренувань.</p>';
+      return;
+    }
+    el.innerHTML = state.history.map(function(h){
+      var totalVolume = 0, totalReps = 0;
+      Object.values(h.summary||{}).forEach(function(g){ totalVolume += g.volume; totalReps += g.reps; });
+      return '<div class="card history-card" data-id="'+esc(h.id)+'">'
+        + '<div class="card-row" data-action="toggle-history"><div>'
+        + '<div class="card-title">'+fmtDateLong(h.startedAt)+'</div>'
+        + '<div class="card-meta">'+fmtClock(h.durationSec,true)+' · '+fmtNum(totalReps)+' повторень · '+fmtNum(totalVolume)+' кг</div>'
+        + (h.templateName ? '<div class="chips"><span class="chip">'+esc(h.templateName)+'</span></div>' : '')
+        + '</div><div class="card-actions"><button class="icon-btn danger" data-action="delete-history" data-id="'+esc(h.id)+'" title="Видалити">🗑</button></div></div>'
+        + '<div class="history-detail" hidden>'+historyDetailHtml(h)+'</div>'
+        + '</div>';
+    }).join("");
+  }
+  function toggleHistoryCard(cardEl){
+    var detail = cardEl.querySelector(".history-detail");
+    if (detail) detail.hidden = !detail.hidden;
+  }
+  async function deleteHistoryEntry(id){
+    var ok = await askConfirm("Видалити цей запис з історії?");
+    if (!ok) return;
+    await Store.deleteHistoryEntry(id);
+    state.history = state.history.filter(function(h){ return h.id !== id; });
+    renderHistory();
+  }
+
+  /* ---------------- settings ---------------- */
+  function renderSettings(){
+    $("groups-list").innerHTML = state.muscleGroups.map(function(g){
+      return '<span class="chip removable">'+esc(g)+' <button data-action="remove-group" data-group="'+esc(g)+'" title="Видалити">✕</button></span>';
+    }).join("");
+  }
+  async function addGroup(){
+    var inp = $("new-group-input");
+    var val = inp.value.trim();
+    if (!val) return;
+    if (state.muscleGroups.indexOf(val) !== -1){ inp.value=""; return; }
+    state.muscleGroups.push(val);
+    await Store.saveSettings({muscleGroups: state.muscleGroups});
+    inp.value = "";
+    renderSettings();
+  }
+  async function removeGroup(g){
+    var ok = await askConfirm('Видалити групу «'+g+'»?');
+    if (!ok) return;
+    state.muscleGroups = state.muscleGroups.filter(function(x){ return x !== g; });
+    await Store.saveSettings({muscleGroups: state.muscleGroups});
+    renderSettings();
+  }
+
+  /* ---------------- boot ---------------- */
+  function renderAll(){
+    renderWorkout();
+    renderTemplatesList();
+    renderHistory();
+    renderSettings();
+  }
+
+  async function boot(){
+    var data = Store.loadAll();
+    state.muscleGroups = (data.settings && data.settings.muscleGroups && data.settings.muscleGroups.length) ? data.settings.muscleGroups : DEFAULT_GROUPS.slice();
+    if (!data.settings){ Store.saveSettings({muscleGroups: state.muscleGroups}); }
+    state.templates = data.templates || [];
+    state.history = (data.history || []).slice().sort(function(a,b){ return (b.startedAt||"").localeCompare(a.startedAt||""); });
+    state.active = data.active || null;
+    state.recap = null;
+    renderAll();
+  }
+
+  /* ---------------- events ---------------- */
+  document.body.addEventListener("click", function(e){
+    var navBtn = e.target.closest(".nav-btn");
+    if (navBtn){ showView(navBtn.dataset.view); return; }
+
+    var btn = e.target.closest("[data-action]");
+    if (!btn) return;
+    var action = btn.dataset.action;
+
+    switch(action){
+      case "goto-workout": showView("workout"); break;
+      case "start-blank": startBlank(); break;
+      case "start-template": startFromTemplate(btn.dataset.id); break;
+      case "discard-workout": discardWorkout(); break;
+      case "finish-workout": finishWorkout(); break;
+      case "recap-done": state.recap = null; renderWorkout(); break;
+      case "toggle-add-exercise": toggleAddExercisePanel(); break;
+      case "cancel-add-exercise": toggleAddExercisePanel(true); break;
+      case "submit-add-exercise": submitAddExercise(); break;
+      case "remove-exercise": removeExercise(btn.closest(".ex-card").dataset.ex); break;
+      case "add-set": addSet(btn.closest(".ex-card").dataset.ex); break;
+      case "remove-set": removeSet(btn.closest(".ex-card").dataset.ex, Number(btn.dataset.set)); break;
+      case "start-rest": manualStartRest(btn.closest(".ex-card").dataset.ex); break;
+      case "rest-skip": clearRestTimerSilent(); break;
+      case "rest-add15": if (restTimer){ restTimer.remaining += 15; restTimer.totalSec += 15; renderRestBar(); } break;
+      case "new-template": newTemplate(); break;
+      case "edit-template": editTemplate(btn.dataset.id); break;
+      case "delete-template": deleteTemplate(btn.dataset.id); break;
+      case "tpl-back": backFromTemplateEdit(); break;
+      case "tpl-add-exercise": tplAddExercise(); break;
+      case "tpl-remove-exercise": tplRemoveExercise(Number(btn.dataset.idx)); break;
+      case "tpl-save": saveTemplateEdit(); break;
+      case "toggle-history": toggleHistoryCard(btn.closest(".history-card")); break;
+      case "delete-history": e.stopPropagation(); deleteHistoryEntry(btn.dataset.id); break;
+      case "add-group": addGroup(); break;
+      case "remove-group": removeGroup(btn.dataset.group); break;
+      case "export-data": exportData(); break;
+    }
+  });
+
+  function handleFieldEvent(e){
+    var t = e.target;
+    if (t.closest && t.closest(".tpl-ex-row") && t.matches("[data-field]")) { onTplFieldInput(t); return; }
+    if (t.matches && (t.matches('[data-action="set-weight"]') || t.matches('[data-action="set-reps"]'))) { onSetValueInput(t); return; }
+    if (t.matches && t.matches('[data-action="comment"]')) { onCommentInput(t); return; }
+  }
+  document.body.addEventListener("input", handleFieldEvent);
+  document.body.addEventListener("change", function(e){
+    handleFieldEvent(e);
+    if (e.target.matches && e.target.matches('[data-action="set-done"]')) onSetDoneChange(e.target);
+  });
+  $("new-group-input").addEventListener("keydown", function(e){
+    if (e.key === "Enter"){ e.preventDefault(); addGroup(); }
+  });
+  $("import-file-input").addEventListener("change", onImportFile);
+
+  boot();
+})();
+</script>
